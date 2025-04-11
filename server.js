@@ -13,11 +13,14 @@ const app = express();
 
 // ✅ Lista de orígenes permitidos
 const allowedOrigins = [
-  'http://localhost:5500',               // Para pruebas locales
+  'http://localhost:5500',
   'http://127.0.0.1:5500',
-  'https://carlospatiño.site',           // ✅ Tu dominio real en producción
-  'https://www.carlospatiño.site'        // (opcional, si usas www)
+  'https://carlospatiño.site',
+  'https://www.carlospatiño.site',
+  'https://xn--carlospatio-beb.site',       // ✅ Versión punycode (ñ codificada)
+  'https://www.xn--carlospatio-beb.site'    // (por si usas www también)
 ];
+
 
 // ✅ Middleware CORS con verificación de origen dinámica
 app.use(cors({
