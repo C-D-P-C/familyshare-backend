@@ -11,43 +11,49 @@ const fileRoutes = require('./routes/fileRoutes');
 
 const app = express();
 
-// Configuración flexible de CORS
+// ✅ Lista de orígenes permitidos
 const allowedOrigins = [
-  'http://localhost:5500',
+  'http://localhost:5500',               // Para pruebas locales
   'http://127.0.0.1:5500',
-  'https://tudominio.com',           // Reemplaza esto por tu dominio real en Hostinger
-  'https://www.tudominio.com'        // Con www si aplica
+  'https://carlospatiño.site',           // ✅ Tu dominio real en producción
+  'https://www.carlospatiño.site'        // (opcional, si usas www)
 ];
 
+// ✅ Middleware CORS con verificación de origen dinámica
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('No permitido por CORS'));
+      callback(new Error('No permitido por CORS: ' + origin));
     }
   },
   credentials: true
 }));
 
+// Middleware de parseo
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Carpeta pública para descargas
+// ✅ Carpeta pública para archivos subidos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Sesiones con cookies
+// ✅ Sesión persistente con cookies
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    secure: true,       // ⚠️ IMPORTANTE: true en producción con HTTPS
+    sameSite: 'none'    // ⚠️ Necesario para compartir cookies entre dominios
+  }
 }));
 
 // Rutas API
 app.use('/api/auth', authRoutes);
 app.use('/api/files', fileRoutes);
 
-// Ruta raíz de prueba
+// Ruta de prueba
 app.get('/', (req, res) => {
   res.send('Servidor funcionando 🎉');
 });
